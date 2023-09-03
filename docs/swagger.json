@@ -1,0 +1,11 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "\"Order service\" - a service for managing order data. The service provides a convenient and reliable way to interact with order data through the API. You can use this API to get order information, create, and cache data in memory for faster access. A simple and intuitive API makes it easy to integrate Order Service into your applications and systems.",
+        "title": "Order Service",
+        "contact": {}
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {}
+}

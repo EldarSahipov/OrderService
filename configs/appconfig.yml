@@ -1,0 +1,14 @@
+db:
+  host: "localhost"
+  name: order_management_db
+  port: 5432
+  username: postgres
+  password: 1234
+
+nats:
+  clusterID: test-cluster
+  clientID: service
+  subject: SUBJECT2
+
+server:
+  port: "8080"
