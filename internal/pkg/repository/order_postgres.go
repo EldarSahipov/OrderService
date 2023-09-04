@@ -27,6 +27,7 @@ func (r *OrderPostgres) Create(order *models.Order) (string, error) {
 		order.Delivery.Name, order.Delivery.Phone, order.Delivery.Zip,
 		order.Delivery.City, order.Delivery.Address, order.Delivery.Region, order.Delivery.Email)
 	if err != nil {
+		_ = tx.Rollback(context.Background())
 		return "0", err
 	}
 
@@ -37,6 +38,7 @@ func (r *OrderPostgres) Create(order *models.Order) (string, error) {
 		order.Payment.Amount, order.Payment.PaymentDT, order.Payment.Bank, order.Payment.DeliveryCost,
 		order.Payment.GoodsTotal, order.Payment.CustomFee)
 	if err != nil {
+		_ = tx.Rollback(context.Background())
 		return "0", err
 	}
 	var uid string
@@ -50,6 +52,7 @@ func (r *OrderPostgres) Create(order *models.Order) (string, error) {
 		order.SmID, order.DateCreated, order.OofShard)
 
 	if err := row.Scan(&uid); err != nil {
+		_ = tx.Rollback(context.Background())
 		return "0", err
 	}
 
@@ -60,6 +63,7 @@ func (r *OrderPostgres) Create(order *models.Order) (string, error) {
 			item.ChrtID, item.TrackNumber, item.Price, item.Rid, item.Name,
 			item.Sale, item.Size, item.TotalPrice, item.NmId, item.Brand, item.Status, item.OrderUid)
 		if err != nil {
+			_ = tx.Rollback(context.Background())
 			return "0", err
 		}
 	}
@@ -67,6 +71,7 @@ func (r *OrderPostgres) Create(order *models.Order) (string, error) {
 }
 
 func (r *OrderPostgres) GetAll() ([]models.Order, error) {
+	tx, err := r.db.Begin(context.Background())
 	var orders []models.Order
 
 	// Выполните SQL-запрос для извлечения всех заказов
@@ -201,10 +206,11 @@ func (r *OrderPostgres) GetAll() ([]models.Order, error) {
 		orders = append(orders, order)
 	}
 
-	return orders, nil
+	return orders, tx.Commit(context.Background())
 }
 
 func (r *OrderPostgres) GetByUID(uid string) (models.Order, error) {
+	tx, err := r.db.Begin(context.Background())
 	var order models.Order
 
 	// Выполните SQL-запрос для извлечения информации о заказе
@@ -251,7 +257,7 @@ func (r *OrderPostgres) GetByUID(uid string) (models.Order, error) {
 	row := r.db.QueryRow(context.Background(), query, uid)
 
 	// Сканируем результаты запроса в структуру Order
-	err := row.Scan(
+	err = row.Scan(
 		&order.OrderUid,
 		&order.TrackNumber,
 		&order.Entry,
@@ -334,5 +340,5 @@ func (r *OrderPostgres) GetByUID(uid string) (models.Order, error) {
 		order.Items = append(order.Items, item)
 	}
 
-	return order, nil
+	return order, tx.Commit(context.Background())
 }

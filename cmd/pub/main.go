@@ -41,6 +41,6 @@ func main() {
 		if err != nil {
 			logrus.Fatalf("publishing error from nat streaming server: %s", err.Error())
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }

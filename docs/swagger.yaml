@@ -1,12 +1,254 @@
 basePath: /
+definitions:
+  handler.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Delivery:
+    properties:
+      address:
+        maxLength: 30
+        type: string
+      city:
+        maxLength: 30
+        type: string
+      email:
+        maxLength: 30
+        type: string
+      name:
+        maxLength: 30
+        type: string
+      phone:
+        type: string
+      region:
+        maxLength: 30
+        type: string
+      zip:
+        maxLength: 10
+        type: string
+    required:
+    - address
+    - city
+    - email
+    - name
+    - phone
+    - region
+    - zip
+    type: object
+  models.Item:
+    properties:
+      brand:
+        type: string
+      chrt_id:
+        type: integer
+      name:
+        type: string
+      nm_id:
+        type: integer
+      order_uid:
+        type: string
+      price:
+        type: integer
+      rid:
+        maxLength: 36
+        minLength: 21
+        type: string
+      sale:
+        type: integer
+      size:
+        type: string
+      status:
+        minimum: 0
+        type: integer
+      total_price:
+        type: integer
+      track_number:
+        maxLength: 13
+        minLength: 13
+        type: string
+    required:
+    - brand
+    - chrt_id
+    - name
+    - nm_id
+    - rid
+    - size
+    - status
+    - track_number
+    type: object
+  models.Order:
+    properties:
+      customer_id:
+        maxLength: 4
+        minLength: 4
+        type: string
+      date_created:
+        format: "2021-11-26T06:22:19Z"
+        type: string
+      delivery:
+        $ref: '#/definitions/models.Delivery'
+      delivery_service:
+        maxLength: 5
+        minLength: 5
+        type: string
+      entry:
+        maxLength: 4
+        minLength: 4
+        type: string
+      internal_signature:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/models.Item'
+        type: array
+      locale:
+        enum:
+        - ru
+        - en
+        type: string
+      oof_shard:
+        maxLength: 2
+        type: string
+      order_uid:
+        maxLength: 36
+        minLength: 19
+        type: string
+      payment:
+        $ref: '#/definitions/models.Payment'
+      shardkey:
+        type: string
+      sm_id:
+        maximum: 100
+        minimum: 0
+        type: integer
+      track_number:
+        maxLength: 14
+        minLength: 13
+        type: string
+    required:
+    - customer_id
+    - date_created
+    - delivery
+    - delivery_service
+    - entry
+    - items
+    - oof_shard
+    - order_uid
+    - payment
+    - track_number
+    type: object
+  models.Payment:
+    properties:
+      amount:
+        type: integer
+      bank:
+        type: string
+      currency:
+        type: string
+      custom_fee:
+        type: integer
+      delivery_cost:
+        type: integer
+      goods_total:
+        type: integer
+      payment_dt:
+        type: integer
+      provider:
+        type: string
+      request_id:
+        type: string
+      transaction:
+        type: string
+    required:
+    - bank
+    - currency
+    - payment_dt
+    - provider
+    - transaction
+    type: object
 host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: eldar.shpv@gmail.com
+    name: Eldar Sahipov
+    url: https://t.me/arassvet
   description: '"Order service" - a service for managing order data. The service provides
     a convenient and reliable way to interact with order data through the API. You
     can use this API to get order information, create, and cache data in memory for
     faster access. A simple and intuitive API makes it easy to integrate Order Service
     into your applications and systems.'
   title: Order Service
-paths: {}
+  version: "1.0"
+paths:
+  /api/orders/{uid}:
+    get:
+      consumes:
+      - application/json
+      description: Get order by uid from cache
+      operationId: get-order-by-uid-from-cache
+      parameters:
+      - description: order's uid
+        in: path
+        maxLength: 36
+        minLength: 19
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get Order By Uid From Cache
+      tags:
+      - orders
+  /api/orders/all:
+    get:
+      consumes:
+      - application/json
+      description: get all orders
+      operationId: get-all-orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get All Orders
+      tags:
+      - orders
 swagger: "2.0"

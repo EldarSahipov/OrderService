@@ -3,9 +3,348 @@
     "info": {
         "description": "\"Order service\" - a service for managing order data. The service provides a convenient and reliable way to interact with order data through the API. You can use this API to get order information, create, and cache data in memory for faster access. A simple and intuitive API makes it easy to integrate Order Service into your applications and systems.",
         "title": "Order Service",
-        "contact": {}
+        "contact": {
+            "name": "Eldar Sahipov",
+            "url": "https://t.me/arassvet",
+            "email": "eldar.shpv@gmail.com"
+        },
+        "version": "1.0"
     },
     "host": "localhost:8080",
     "basePath": "/",
-    "paths": {}
+    "paths": {
+        "/api/orders/all": {
+            "get": {
+                "description": "get all orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get All Orders",
+                "operationId": "get-all-orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/orders/{uid}": {
+            "get": {
+                "description": "Get order by uid from cache",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Order By Uid From Cache",
+                "operationId": "get-order-by-uid-from-cache",
+                "parameters": [
+                    {
+                        "maxLength": 36,
+                        "minLength": 19,
+                        "type": "string",
+                        "description": "order's uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.errorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Delivery": {
+            "type": "object",
+            "required": [
+                "address",
+                "city",
+                "email",
+                "name",
+                "phone",
+                "region",
+                "zip"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "city": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "zip": {
+                    "type": "string",
+                    "maxLength": 10
+                }
+            }
+        },
+        "models.Item": {
+            "type": "object",
+            "required": [
+                "brand",
+                "chrt_id",
+                "name",
+                "nm_id",
+                "rid",
+                "size",
+                "status",
+                "track_number"
+            ],
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "chrt_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nm_id": {
+                    "type": "integer"
+                },
+                "order_uid": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "rid": {
+                    "type": "string",
+                    "maxLength": 36,
+                    "minLength": 21
+                },
+                "sale": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "total_price": {
+                    "type": "integer"
+                },
+                "track_number": {
+                    "type": "string",
+                    "maxLength": 13,
+                    "minLength": 13
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "required": [
+                "customer_id",
+                "date_created",
+                "delivery",
+                "delivery_service",
+                "entry",
+                "items",
+                "oof_shard",
+                "order_uid",
+                "payment",
+                "track_number"
+            ],
+            "properties": {
+                "customer_id": {
+                    "type": "string",
+                    "maxLength": 4,
+                    "minLength": 4
+                },
+                "date_created": {
+                    "type": "string",
+                    "format": "2021-11-26T06:22:19Z"
+                },
+                "delivery": {
+                    "$ref": "#/definitions/models.Delivery"
+                },
+                "delivery_service": {
+                    "type": "string",
+                    "maxLength": 5,
+                    "minLength": 5
+                },
+                "entry": {
+                    "type": "string",
+                    "maxLength": 4,
+                    "minLength": 4
+                },
+                "internal_signature": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Item"
+                    }
+                },
+                "locale": {
+                    "type": "string",
+                    "enum": [
+                        "ru",
+                        "en"
+                    ]
+                },
+                "oof_shard": {
+                    "type": "string",
+                    "maxLength": 2
+                },
+                "order_uid": {
+                    "type": "string",
+                    "maxLength": 36,
+                    "minLength": 19
+                },
+                "payment": {
+                    "$ref": "#/definitions/models.Payment"
+                },
+                "shardkey": {
+                    "type": "string"
+                },
+                "sm_id": {
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 0
+                },
+                "track_number": {
+                    "type": "string",
+                    "maxLength": 14,
+                    "minLength": 13
+                }
+            }
+        },
+        "models.Payment": {
+            "type": "object",
+            "required": [
+                "bank",
+                "currency",
+                "payment_dt",
+                "provider",
+                "transaction"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "bank": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "custom_fee": {
+                    "type": "integer"
+                },
+                "delivery_cost": {
+                    "type": "integer"
+                },
+                "goods_total": {
+                    "type": "integer"
+                },
+                "payment_dt": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "transaction": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

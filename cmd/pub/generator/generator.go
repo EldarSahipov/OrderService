@@ -5,7 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	uuid "github.com/satori/go.uuid"
-	"log"
+	"github.com/sirupsen/logrus"
 	"math/rand"
 	"os"
 	"strconv"
@@ -18,7 +18,7 @@ func NewOrder() *models.Order {
 	return &models.Order{
 		OrderUid:    uid,
 		TrackNumber: trackNumber,
-		Entry:       "WBIL",
+		Entry:       "WBILAAAA",
 		Delivery: models.Delivery{
 			Name:    randValueString("C:\\dev\\Wildberries\\OrderService\\data\\name.txt") + strconv.Itoa(rand.Intn(100000)+1000),
 			Phone:   randValueString("C:\\dev\\Wildberries\\OrderService\\data\\phone.txt"),
@@ -46,7 +46,7 @@ func NewOrder() *models.Order {
 		DeliveryService:   "meest",
 		ShardKey:          "9",
 		SmID:              99,
-		DateCreated:       parseDate(randValueString("C:\\dev\\Wildberries\\OrderService\\data\\data.txt")),
+		DateCreated:       randValueString("C:\\dev\\Wildberries\\OrderService\\data\\data.txt"),
 		OofShard:          "1",
 		Items: []models.Item{
 			{
@@ -70,9 +70,14 @@ func NewOrder() *models.Order {
 func randValueString(file string) string {
 	data, err := os.Open(file)
 	if err != nil {
-		log.Fatalln("Failed to read file:", err)
+		logrus.Fatalf("failed to read file: %s", err.Error())
 	}
-	defer data.Close()
+	defer func(data *os.File) {
+		err := data.Close()
+		if err != nil {
+			logrus.Fatalf("file connection close error: %s", err.Error())
+		}
+	}(data)
 
 	fileScanner := bufio.NewScanner(data)
 	var lines []string
@@ -80,7 +85,7 @@ func randValueString(file string) string {
 		lines = append(lines, fileScanner.Text())
 	}
 
-	rand.Seed(time.Now().Unix())
+	rand.NewSource(time.Now().Unix())
 
 	randomIndex := rand.Intn(len(lines))
 	randomValue := lines[randomIndex]
@@ -89,19 +94,16 @@ func randValueString(file string) string {
 }
 
 func randIntValue() string {
-	rand.Seed(time.Now().UnixNano())
+	rand.NewSource(time.Now().UnixNano())
 	randomNumber := rand.Intn(10000000)
 	formattedNumber := fmt.Sprintf("%07d", randomNumber)
 	return formattedNumber
 }
 
 func parseDate(date string) time.Time {
-	timeFormat := "2006-01-02T15:04:05Z"
-
-	parsedTime, err := time.Parse(timeFormat, date)
+	parsedTime, err := time.Parse(time.RFC3339, date)
 	if err != nil {
-		fmt.Println("Ошибка при парсинге времени:", err)
+		fmt.Println("time conversion error::", err.Error())
 	}
-
 	return parsedTime
 }

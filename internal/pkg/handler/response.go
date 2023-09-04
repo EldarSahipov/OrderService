@@ -1,6 +1,7 @@
 package handler
 
 import (
+	_ "OrderService/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )

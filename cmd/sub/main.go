@@ -2,6 +2,7 @@ package main
 
 import (
 	appconfig "OrderService/configs"
+	_ "OrderService/docs"
 	"OrderService/internal/http"
 	"OrderService/internal/pkg/handler"
 	"OrderService/internal/pkg/nats"
@@ -16,7 +17,12 @@ import (
 )
 
 // @title Order Service
+// @version         1.0
 // @description "Order service" - a service for managing order data. The service provides a convenient and reliable way to interact with order data through the API. You can use this API to get order information, create, and cache data in memory for faster access. A simple and intuitive API makes it easy to integrate Order Service into your applications and systems.
+
+// @contact.name   Eldar Sahipov
+// @contact.url    https://t.me/arassvet
+// @contact.email  eldar.shpv@gmail.com
 
 // @host localhost:8080
 // @BasePath /

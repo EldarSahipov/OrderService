@@ -2,7 +2,7 @@ package configs
 
 import (
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"os"
 )
 
 type AppConfig struct {
@@ -30,7 +30,7 @@ type Server struct {
 }
 
 func Initialize() (*AppConfig, error) {
-	contents, err := ioutil.ReadFile("C:\\dev\\Wildberries\\OrderService\\configs\\appconfig.yml")
+	contents, err := os.ReadFile("C:\\dev\\Wildberries\\OrderService\\configs\\appconfig.yml")
 	if err != nil {
 		return nil, err
 	}
