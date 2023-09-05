@@ -5,6 +5,8 @@ import (
 	"OrderService/internal/pkg/repository"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Orders interface {
 	GetByUID(uid string) (models.Order, error)
 	GetAll() ([]models.Order, error)
