@@ -2,24 +2,27 @@ package main
 
 import (
 	"OrderService/cmd/pub/generator"
-	appconfig "OrderService/configs"
+	"OrderService/configs"
 	"encoding/json"
 	"github.com/nats-io/stan.go"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"time"
 )
 
 func main() {
 	// init config
-	config, err := appconfig.Initialize()
-	if err != nil {
+	if err := configs.InitConf(); err != nil {
 		logrus.Fatalf("configuration file initialization error: %s", err.Error())
 	}
 
 	logrus.Println("Loaded config")
 
 	// connect nats streaming server
-	sc, err := stan.Connect(config.Nats.ClusterID, "service")
+	sc, err := stan.Connect(
+		viper.GetString("nats.clusterID"),
+		"servicePub",
+		stan.NatsURL(viper.GetString("nats.URL_PUB")))
 	if err != nil {
 		logrus.Fatalf("connection error with nats streaming: %s", err.Error())
 	}
@@ -37,10 +40,10 @@ func main() {
 		if err != nil {
 			logrus.Fatalf("new order processing error: %s", err.Error())
 		}
-		err = sc.Publish(config.Nats.Subject, jsonObject)
+		err = sc.Publish(viper.GetString("nats.subject"), jsonObject)
 		if err != nil {
 			logrus.Fatalf("publishing error from nat streaming server: %s", err.Error())
 		}
-		time.Sleep(50000 * time.Second)
+		time.Sleep(viper.GetDuration("time") * time.Second)
 	}
 }

@@ -14,19 +14,19 @@ import (
 
 func NewOrder() *models.Order {
 	uid := uuid.NewV4().String()
-	trackNumber := randValueString("C:\\dev\\Wildberries\\OrderService\\data\\track_number.txt")
+	trackNumber := randValueString("./data/track_number.txt")
 	return &models.Order{
 		OrderUid:    uid,
 		TrackNumber: trackNumber,
 		Entry:       "WBILAAAA",
 		Delivery: models.Delivery{
-			Name:    randValueString("C:\\dev\\Wildberries\\OrderService\\data\\name.txt") + strconv.Itoa(rand.Intn(100000)+1000),
-			Phone:   randValueString("C:\\dev\\Wildberries\\OrderService\\data\\phone.txt"),
+			Name:    randValueString("./data/name.txt") + strconv.Itoa(rand.Intn(100000)+1000),
+			Phone:   randValueString("./data/phone.txt"),
 			Zip:     randIntValue(),
-			City:    randValueString("C:\\dev\\Wildberries\\OrderService\\data\\city.txt"),
-			Address: randValueString("C:\\dev\\Wildberries\\OrderService\\data\\address.txt"),
-			Region:  randValueString("C:\\dev\\Wildberries\\OrderService\\data\\address.txt"),
-			Email:   randValueString("C:\\dev\\Wildberries\\OrderService\\data\\email.txt"),
+			City:    randValueString("./data/city.txt"),
+			Address: randValueString("./data/address.txt"),
+			Region:  randValueString("./data/address.txt"),
+			Email:   randValueString("./data/email.txt"),
 		},
 		Payment: models.Payment{
 			Transaction:  uid,
@@ -46,7 +46,7 @@ func NewOrder() *models.Order {
 		DeliveryService:   "meest",
 		ShardKey:          "9",
 		SmID:              99,
-		DateCreated:       randValueString("C:\\dev\\Wildberries\\OrderService\\data\\data.txt"),
+		DateCreated:       randValueString("./data/data.txt"),
 		OofShard:          "1",
 		Items: []models.Item{
 			{
@@ -54,12 +54,12 @@ func NewOrder() *models.Order {
 				TrackNumber: trackNumber,
 				Price:       uint64(rand.Intn(100000) + 100),
 				Rid:         uid, // rofl
-				Name:        randValueString("C:\\dev\\Wildberries\\OrderService\\data\\items.txt"),
+				Name:        randValueString("./data/items.txt"),
 				Sale:        uint64(rand.Intn(100)),
 				Size:        "0",
 				TotalPrice:  uint64(rand.Intn(100000) + 60),
 				NmId:        2389215,
-				Brand:       randValueString("C:\\dev\\Wildberries\\OrderService\\data\\brand.txt"),
+				Brand:       randValueString("./data/brand.txt"),
 				Status:      202,
 				OrderUid:    uid,
 			},
@@ -98,12 +98,4 @@ func randIntValue() string {
 	randomNumber := rand.Intn(10000000)
 	formattedNumber := fmt.Sprintf("%07d", randomNumber)
 	return formattedNumber
-}
-
-func parseDate(date string) time.Time {
-	parsedTime, err := time.Parse(time.RFC3339, date)
-	if err != nil {
-		fmt.Println("time conversion error::", err.Error())
-	}
-	return parsedTime
 }

@@ -1,14 +1,18 @@
 db:
-  host: "localhost"
-  name: order_management_db
-  port: 5432
-  username: postgres
-  password: 1234
-
+  name: "order_management_db"
+  port: "5432"
+  username: "postgres"
+  password: "1234"
+  host: "postgres"
 nats:
-  clusterID: test-cluster
-  clientID: service
-  subject: SUBJECT2
+  URL_SUB: "nats://nats-streaming:4222"
+  URL_PUB: "nats://nats-streaming:4222"
+  clusterID: "test-cluster"
+  clientSub: "service-sub"
+  clientPub: "service-pub"
+  subject: "SUBJECT2"
 
 server:
   port: "8080"
+
+time: 5

@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  pub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ./pub
+    depends_on:
+      - postgres
+      - nats-streaming
+  sub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ./sub
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - nats-streaming
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: order_management_db
+    volumes:
+      - /.database/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  nats-streaming:
+    image: library/nats-streaming:latest
+    restart: always
+    container_name: nats-streaming
+    ports:
+      - "4222:4222"
+      - "8222:8222"

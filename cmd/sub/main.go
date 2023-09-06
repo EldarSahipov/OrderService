@@ -1,7 +1,7 @@
 package main
 
 import (
-	appconfig "OrderService/configs"
+	"OrderService/configs"
 	_ "OrderService/docs"
 	"OrderService/internal/http"
 	"OrderService/internal/pkg/handler"
@@ -11,6 +11,7 @@ import (
 	"context"
 	"github.com/nats-io/stan.go"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,20 +30,19 @@ import (
 
 func main() {
 	// config
-	appConfig, err := appconfig.Initialize()
-	if err != nil {
-		logrus.Fatalln(err)
+	if err := configs.InitConf(); err != nil {
+		logrus.Fatalf("configuration file initialization error: %s", err.Error())
 	}
 
 	logrus.Println("Loaded config")
 
 	// database
 	postgresDB, err := repository.NewPostgresDB(repository.Config{
-		Host:     appConfig.Database.Host,
-		Port:     appConfig.Database.Port,
-		Username: appConfig.Database.Username,
-		Password: appConfig.Database.Password,
-		NameDB:   appConfig.Database.Name,
+		Host:     viper.GetString("db.host"),
+		Port:     viper.GetString("db.port"),
+		Username: viper.GetString("db.username"),
+		Password: viper.GetString("db.password"),
+		NameDB:   viper.GetString("db.name"),
 	})
 	if err != nil {
 		logrus.Fatalf("database connection error: %s", err.Error())
@@ -54,7 +54,10 @@ func main() {
 	services := service.NewService(repo)
 
 	// connect nats
-	sc, _ := stan.Connect(appConfig.Nats.ClusterID, "sub-1")
+	sc, _ := stan.Connect(
+		viper.GetString("nats.clusterID"),
+		"serviceSub",
+		stan.NatsURL(viper.GetString("nats.URL_SUB")))
 	defer func(sc stan.Conn) {
 		err := sc.Close()
 		if err != nil {
@@ -65,7 +68,7 @@ func main() {
 	logrus.Println("Successful connection to streaming nats server")
 
 	// sub
-	subscribe, err := sc.Subscribe(appConfig.Nats.Subject, func(msg *stan.Msg) {
+	subscribe, err := sc.Subscribe(viper.GetString("nats.subject"), func(msg *stan.Msg) {
 		order, err := nats.UnmarshalTheMessage(string(msg.Data))
 		if err != nil {
 			logrus.Fatalf("unmarshal message error: %s", err.Error())
@@ -88,7 +91,7 @@ func main() {
 	go func() {
 		handlers := handler.NewHandler(services)
 
-		if err := server.Run(appConfig.Server.Port, handlers.InitRoutes()); err != nil {
+		if err := server.Run(viper.GetString("server.port"), handlers.InitRoutes()); err != nil {
 			logrus.Fatalf("http server start error: %s", err.Error())
 		}
 
