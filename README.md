@@ -19,7 +19,7 @@ This project is a demo Golang service for displaying order data. It uses Postgre
 - [Vegeta](https://github.com/tsenart/vegeta)
 - [go-wrk](https://github.com/tsliwowicz/go-wrk)
 
-## Использование
+## Usage
 1. Clone this repository
 ```sh
 git clone https://github.com/EldarSahipov/OrderService.git
