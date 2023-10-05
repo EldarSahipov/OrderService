@@ -3,7 +3,7 @@ db:
   port: "5432"
   username: "postgres"
   password: "1234"
-  host: "postgres"
+  host: "localhost"
 nats:
   URL_SUB: "nats://nats-streaming:4222"
   URL_PUB: "nats://nats-streaming:4222"
@@ -15,4 +15,4 @@ nats:
 server:
   port: "8080"
 
-time: 5
+time: 50000

@@ -56,8 +56,7 @@ func main() {
 	// connect nats
 	sc, _ := stan.Connect(
 		viper.GetString("nats.clusterID"),
-		"serviceSub",
-		stan.NatsURL(viper.GetString("nats.URL_SUB")))
+		"serviceSub")
 	defer func(sc stan.Conn) {
 		err := sc.Close()
 		if err != nil {

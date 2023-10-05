@@ -21,8 +21,7 @@ func main() {
 	// connect nats streaming server
 	sc, err := stan.Connect(
 		viper.GetString("nats.clusterID"),
-		"servicePub",
-		stan.NatsURL(viper.GetString("nats.URL_PUB")))
+		"servicePub")
 	if err != nil {
 		logrus.Fatalf("connection error with nats streaming: %s", err.Error())
 	}
